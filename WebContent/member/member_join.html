@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="ko-kr">
+<head>
+<meta charset="UTF-8">
+<title>회원 가입 </title>
+ <meta name="viewport" content="width=device-width, initial-scale=1">
+
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>우편번호 예시</title>
+<!-- 1단계 : daum 우편번호 서비스 외장 JS(Javascript) 파일 링크 -->
+<script src="http://dmaps.daum.net/map_js_init/postcode.v2.js"></script>
+
+
+<!-- bootstrap CSS -->
+
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css">
+<!-- jqueryUI -->
+<link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+
+<!-- jQuery -->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+
+<!-- jQueryUI.js -->
+<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+
+<!-- popper.js -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+<!-- bootstrap javascript -->
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"></script>
+
+
+<!-- 2단계 : 소스 코드 복사 -->
+<script>
+// 도로명 주소 검색
+    function getPostcodeAddress() {
+        new daum.Postcode({
+            oncomplete: function(data) {
+                // 팝업에서 검색결과 항목을 클릭했을때 실행할 코드를 작성하는 부분.
+
+                // 각 주소의 노출 규칙에 따라 주소를 조합한다.
+                // 내려오는 변수가 값이 없는 경우엔 공백('')값을 가지므로, 이를 참고하여 분기 한다.
+                var fullAddr = ''; // 최종 주소 변수
+                var extraAddr = ''; // 조합형 주소 변수
+
+                // 사용자가 선택한 주소 타입에 따라 해당 주소 값을 가져온다.
+                if (data.userSelectedType === 'R') { // 사용자가 도로명 주소를 선택했을 경우
+                    fullAddr = data.roadAddress;
+
+                } else { // 사용자가 지번 주소를 선택했을 경우(J)
+                    fullAddr = data.jibunAddress;
+                }
+
+                // 사용자가 선택한 주소가 도로명 타입일때 조합한다.
+                if(data.userSelectedType === 'R'){
+                    //법정동명이 있을 경우 추가한다.
+                    if(data.bname !== ''){
+                        extraAddr += data.bname;
+                    }
+                    // 건물명이 있을 경우 추가한다.
+                    if(data.buildingName !== ''){
+                        extraAddr += (extraAddr !== '' ? ', ' + data.buildingName : data.buildingName);
+                    }
+                    // 조합형주소의 유무에 따라 양쪽에 괄호를 추가하여 최종 주소를 만든다.
+                    fullAddr += (extraAddr !== '' ? ' ('+ extraAddr +')' : '');
+                }
+                
+               // 주소 정보 전체 필드 및 내용 확인 : javateacher
+               /*  var output = '';
+                for (var key in data) {
+                	output += key + ":" +  data[key]+"\n";
+                }
+                
+                alert(output); */
+
+                // 3단계 : 해당 필드들에 정보 입력
+                // 우편번호와 주소 정보를 해당 필드에 넣는다.
+                document.getElementById('memberZip').value = data.zonecode; //5자리 새우편번호 사용
+                document.getElementById('memberAddressBasic').value = fullAddr;
+
+                // 커서를 상세주소 필드로 이동한다.
+                document.getElementById('memberAddressDetail').focus();
+            }
+        }).open();
+    }
+    
+    
+    //jQuery
+    
+    $(function(){
+    	
+    	$.datepicker.regional['ko'] = {
+    	          autoSize : true,
+    	          closeText: '닫기',
+    	          prevText: '이전달',
+    	          nextText: '다음달',
+    	          currentText: '오늘',
+    	          yearRange: "1930:2019", // 1930 ~ 2019
+    	          // yearRange: "-36:-20", // 36년전부터 20년전까지
+    	          monthNames: ['1월','2월','3월','4월','5월','6월',
+    	          '7월','8월','9월','10월','11월','12월'],
+    	          monthNamesShort: ['1월','2월','3월','4월','5월','6월',
+    	          '7월','8월','9월','10월','11월','12월'],
+    	          dayNames: ['일','월','화','수','목','금','토'],
+    	          dayNamesShort: ['일','월','화','수','목','금','토'],
+    	          dayNamesMin: ['일','월','화','수','목','금','토'],
+    	          weekHeader: 'Wk',
+    	          dateFormat: 'yy-mm-dd', // 날짜 포맷
+    	          firstDay: 0,
+    	          minDate: new Date(1930, 1 - 1, 1),
+    	          isRTL: false,
+    	          showMonthAfterYear: true,
+    	          yearSuffix: '년',
+    	   
+    	          beforeShow: function() {
+    	             setTimeout(function(){
+    	                $('.ui-datepicker').css('z-index', 10);
+    	             }, 0);
+    	          }
+    	      };
+    	       
+    	      $.datepicker.setDefaults($.datepicker.regional['ko']);
+    	     
+    	      $("#memberBirth").datepicker({changeYear:true, changeMonth:true});
+    	
+    });
+    
+    
+    
+ 
+</script>    
+
+
+<script>
+
+	window.onload=function(){
+		
+		//var join_submit_btn =document.getElementById("join_submit_btn");
+		
+		
+		var validFlag=0; // 2이면 전송 : 경우 -1,2 점검   => 2 
+		
+		
+		
+		var member_form =document.getElementById("member_form");
+		member_form.onsubmit=function(){
+			
+			
+			alert("전송 점검");		
+		//join_submit_btn.onclick=function(){
+			
+			// 우편번호/ 주소 폼 점검 
+			var memberZip = document.getElementById("memberZip");
+			var memberAddressBasic=document.getElementById("memberAddressBasic");
+			var memberAddressDetail=document.getElementById("memberAddressDetail");
+			console.log("memberZip: "+ memberZip.value);
+			console.log("memberAddressBasic: "+ memberAddressBasic.value);
+			console.log("memberAddressDetail: "+ memberAddressDetail.value);
+			
+			// 경우-1
+			//우편번호 / 기본 주소가 입력 되었고 상세 주소가 미입력 되었을때 
+			
+			if(memberZip.value.trim() != '' && 
+			   memberAddressBasic.value.trim() !='' && 
+			   memberAddressDetail.value.trim() == ''){
+				alert("상세 주소를 입력하십시오");
+				memberAddressDetail.value=""; // 초기화
+				memberAddressDetail.focus();
+				validFlag--;
+			} else{
+				validFlag++;
+			}
+			
+			//경우-2
+			// 우편번호/ 기본 주소가 미입력되었는데 상세주소가 입력 되었을 때 
+			
+			if(memberZip.value.trim() == '' && 
+			   memberAddressBasic.value.trim() =='' && 
+			   memberAddressDetail.value.trim() != ''){
+						alert("우편번호를 입력하세요");
+						document.getElementById("address_search_btn").focus();
+						validFlag--;
+			}else{
+				validFlag++;
+			}
+			
+			
+			console.log("### validFlag: "+ validFlag);
+			
+			//전송 가능 최종점검 
+			if(validFlag ==2 ){
+				alert("전송 ! ");
+				
+			} else{
+				return false; // 전송금지
+			}
+		
+			
+		}
+	}
+
+
+</script>
+
+
+
+<style>
+table#member_join_tbl{
+	width:800px;
+	
+}
+
+span.req-item{
+color:red;}
+
+
+</style>
+
+
+
+
+</head>
+<body>
+
+<div id="wrap" class="mx-auto" style="width:800px">
+	<!-- 회원가입폼 -->
+	<form id="member_form" name="member_form" method="post" action="member_join_proc.do">
+	
+		<table id="member_join_tbl" class="table table-bordered">
+			<!-- 아이디 -->
+			<tr>
+				<td>
+					<label id="memberId"><span class="req-item">*</span>아이디 : </label>
+				</td>
+				<td>
+					<input type="text" id="memberId" name="memberId" pattern="[a-zA-Z]{1}\w{7,19}" title="아이디는 영문으로 시작하며 영문/숫자 조합하여 8~20자로 입력하십시오" 
+					required size="25" maxlength="20" placeholder="아이디를 입력하세요 " class="form-control" />
+					
+				</td>
+			</tr>
+			
+			<!-- 패스워드 -->
+		
+			<tr>
+			
+				<td>
+					<label id="memberPassword"><span class="req-item">* </span>패스워드 : </label>
+				</td>
+			
+				<td>
+					<input type="text" id="memberPassword" name="memberPassword" pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*\W).{8,20}" title="패쓰워드는 영문대소문자/특수문자/숫자 조합하여 8~20자로 입력하십시오" 
+					required size="25" maxlength="20" placeholder="패스워드를 입력하세요" class="form-control"/>
+				</td>
+			
+			
+			</tr>
+		
+			<!-- 이름 -->
+			
+			<tr>
+				<td>
+					<label id="memberName"><span class="req-item">* </span> 이름: </label>
+				</td>
+				
+				<td>
+					<input type="text" id="memberName" name="memberName" pattern="[가-힣]{2,25}" title="이름은 한글로 입력하십시오"
+					required maxlength="25" placeholder="이름을 입력하세요" class="form-control"/>
+				</td>
+			</tr>
+		
+			<!-- 성별 -->
+			
+			<tr>
+				<td>
+					<label id="memberGender"><span class="req-item">* </span>성별 :  </label>
+				</td>
+				<td>
+				<div class="row">
+				 <div class="custom-control custom-radio col-sm-2 ml-3" >
+					
+					<input type="radio" id="memberGenderMale" name="memberGender" title="성별을 입력하십시오" required class="custom-control-input" value="m"/>
+					<label class="custom-control-label" for="memberGenderMale">남</label>
+					
+					
+				</div>
+				<div class="custom-control custom-radio">
+					
+					<input type="radio" id="memberGenderFemale" name="memberGender" title="성별을 입력하십시오" required class="custom-control-input" value="f"/>
+					<label class="custom-control-label" for="memberGenderFemale">여</label>
+					 
+					  
+				</div>
+				</div>
+					
+				</td>
+			
+			</tr>
+		
+			<!-- 이메일 -->
+		
+		
+			<tr>
+			
+				<td>
+					<label for="memberEmail"><span class="req-item">* </span>이메일: </label>
+				</td>
+				
+				<td>
+					<input type="email" id="memberEmail" name="memberEmail" pattern="[a-zA-Z0-9_+.-]+@([a-zA-Z0-9-]+\.)+[a-zA-Z0-9]{2,4}" title="이메일을 입력하십시오"
+					required maxlength="50" placeholder="이메일을 입력하세요" class="form-control"/>
+				</td>
+			
+			
+			</tr>
+			
+		
+			<!-- 연락처 -->
+		
+		
+			<tr>
+				<td>
+					<label for="memberPhone"><span class="req-item">* </span>연락처: </label>
+				</td>
+				
+				<td>
+					<input type="text" id="memberPhone" name="memberPhone" pattern="01\d{1}-\d{3,4}-\d{4}" title="전화번호는 우측 예시와 같이 입력하십시오"
+					required placeholder="전화번호는 예시와 같이 입력하십시오" class="form-control"/> ex)010-1234-5678
+				</td>
+			
+			</tr>
+			
+			
+			<!-- 생년월일 -->
+			
+			<tr>
+			
+				<td>
+					<label for="memberBirth"><span class="req-item">* </span>생년월일: </label>
+				</td>
+				
+				<td>
+					<input type="text" id="memberBirth" name="memberBirth" pattern="\d{4}-\d{2}-\d{2}" title="생년월일을 입력하십시오"
+					required placeholder="생년월일을 입력하십시오" class="form-control"/>
+				</td>
+			
+			</tr>
+			
+			<!-- 우편번호 -->
+
+			<tr>
+			
+				<td>
+					<label for="memberZip">우편 번호: </label>
+				</td>
+				
+				<td>
+					<div class="row">
+						<div class="col-sm-3">
+							<input type="text" id="memberZip" name="memberZip" pattern="\d{5}" title="우편번호를 입력하세요"
+							maxlength="5" class="form-control" readonly/>
+						</div>
+						
+						<div class="col-sm-9">
+							<input type="button" value="주소 검색 " id ="address_search_btn" class="btn btn-primary" onclick="getPostcodeAddress()"/>
+						
+						</div>
+					</div>
+				</td>
+		
+			</tr>
+			
+			<!-- 기본 주소 -->
+			<tr>
+			
+				<td>
+					<label for="memberAddressBasic"> 기본주소:</label>
+				</td>
+				<td>
+					<input type="text" id="memberAddressBasic" name="memberAddressBasic" pattern="[\w | \W | 가-힣 | / | - | (  |  ) | ,]{2,200}" title="기본주소를 입력하십시오"
+					maxlength="200" class="form-control" readonly/>
+				</td>
+			
+			</tr>
+					
+		
+		
+		<!-- 상세 주소 -->
+			<tr>
+			
+				<td>
+					<label for="memberAddressDetail"> 상세주소:</label>
+				</td>
+				<td>
+					<input type="text" id="memberAddressDetail" name="memberAddressDetail" pattern="[\w | \W | 가-힣 | / | -]{2,100}" title="상세주소를 입력하십시오"
+					maxlength="200" class="form-control"/>
+				</td>
+			
+			</tr>
+	
+		
+		</table>	
+	
+		<!-- 전송 취소 -->
+		<div class="mx-auto" style="width:130px">
+		<button type="submit" id="join_submit_btn" class="btn btn-primary">전송</button>
+		<button type="reset" class="btn btn-primary">취소</button>
+		</div>
+	
+	</form>
+	
+	<!-- //회원가입폼  -->
+	</div>
+	
+</body>
+</html>
