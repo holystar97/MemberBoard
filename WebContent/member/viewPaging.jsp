@@ -61,7 +61,7 @@ table#view_paging {
 				<td>${member.memberPhone}</td>
 				<td><fmt:formatDate value="${member.memberBirth}" pattern="yyyy년  M월  d일"/></td>
 				<td>${member.memberZip}</td>
-				<td>${member.memberAddress}</td>
+				<td>${fn:replace(member.memberAddress,"*"," ")}</td>
 				<td>
 					<input type="button" value="수정" class="btn-sm btn-primary" />
 					<input type="button" value="삭제" class="btn-sm btn-primary" />
