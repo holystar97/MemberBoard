@@ -19,13 +19,20 @@
 <!-- bootstrap javascript -->
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"></script>
 
+<style>
+table#view_paging {
+	font-size:9pt;
+}
+</style>
+
+
 </head>
 <body>
 
 	<!-- 회원정보 출력부 -->
 
-	<div id="wrap">
-		<table id="view_paging" class="table table-hover">
+	<div id="wrap" style="width:80%; margin:auto">
+		<table id="view_paging" class="table table-bordered table-hover">
 			<!-- 표제 -->
 			<tr>
 			
@@ -46,17 +53,20 @@
 			<!-- 회원정보 나열 -->
 			<c:forEach var="member" items="${members}" varStatus="st">
 			<tr>
-				<td></td>
-				<td></td>
-				<td></td>
-				<td></td>
-				<td></td>
-				<td></td>
-				<td></td>
-				<td></td>
-				<td></td>
-				<td></td>
-			
+				<td>${st.count+(pageVO.page-1)*limit}</td>
+				<td>${member.memberId}</td>
+				<td>${member.memberName}</td>
+				<td>${member.memberGender==109 ? "남자": "여자"}</td>
+				<td>${member.memberEmail}</td>
+				<td>${member.memberPhone}</td>
+				<td><fmt:formatDate value="${member.memberBirth}" pattern="yyyy년  M월  d일"/></td>
+				<td>${member.memberZip}</td>
+				<td>${member.memberAddress}</td>
+				<td>
+					<input type="button" value="수정" class="btn-sm btn-primary" />
+					<input type="button" value="삭제" class="btn-sm btn-primary" />
+				</td>
+		
 			</tr>
 			</c:forEach>
 			
