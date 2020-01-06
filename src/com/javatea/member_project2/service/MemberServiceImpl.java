@@ -57,4 +57,22 @@ public class MemberServiceImpl implements MemberService {
 		return  dao.getAllMembersByPaging(page,limit);
 	}
 
+	@Override
+	public boolean updateMember(MemberVO member) throws Exception {
+		
+		return dao.updateMember(member);
+	}
+
+	@Override
+	public boolean deleteMember(String memberId) throws Exception {
+	
+		return dao.deleteMember(memberId);
+	}
+
+	@Override
+	public boolean isMember(String memberId) throws Exception {
+		// TODO Auto-generated method stub
+		return dao.isMember(memberId);
+	}
+
 }

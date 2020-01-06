@@ -44,5 +44,34 @@ public interface MemberService {
 			throws Exception;
 	
 	
+
+	/**
+	 * 회원정보 수정
+	 * @param member 회원정보 객체
+	 * @return 수정 성공 여부
+	 * @throws Exception 예외처리
+	 * */
+	
+	boolean updateMember(MemberVO member) throws Exception;
+	
+	/**
+	 * 회원정보 삭제
+	 * @param memberId 회원 아이디
+	 * @return 삭제 성공 여부
+	 * @throws Exception 예외처리
+	 * */
+	
+	
+	boolean deleteMember(String memberId) throws Exception;
+	
+
+	boolean isMember(String memberId) throws Exception;
+	
+	
+	
+	
+	
+	
+	
 	
 }

@@ -328,5 +328,163 @@ public final class MemberDAOImpl implements MemberDAO { // 이거슨 상속 금�
 		
 
 	}
+	@Override
+	public boolean updateMember(MemberVO member)  {
+			//결과값 
+			boolean flag=false;
+			// SQL 구문 
+			String sql ="UPDATE MEMBER_TBL SET "
+					+ "PW=?,"
+					+ "EMAIL=?,"
+					+ "PHONE=?,"
+					+ "ZIP1=?,"
+					+ "ADDRESS1=? "
+					+ "WHERE ID=?";
+			// DB 연결 객체 생성 
+			Connection con= DbUtil.connect(); // static 영역이여서 객체 생성없이 바로 들어갈 수 있다 
+			// SQL 처리 객체 
+			
+			// Interface statement : 명령문  구문 > callablestatememt Procedure language sql PL sql을 사용할 떄는 stored procedures 
+			//preparedstatement의 상속 whildcard를 쓸수있는 장점 ? 을쓸 수있는 장점 , 인자를 후처리 할 수있다는 장점 
+			// con.preparedstatement 에서 whildcard 사용 
+			// statemenet- preparedstatement- callavlestatement 
+			PreparedStatement pstmt= null;
+			// try catch를 쓸 때 초기화 안했다고 에러가 나기 때문에 초기화하는게 좋다 
+			try {
+				//sql 구문 예비 처리 (준비)
+				pstmt=con.prepareStatement(sql);
+				//sql 인자 처리 
+				pstmt.setString(1, member.getMemberPassword());
+				pstmt.setString(2, member.getMemberEmail());
+				pstmt.setString(3, member.getMemberPhone());
+				pstmt.setString(4, member.getMemberZip()+ "");
+				pstmt.setString(5, member.getMemberAddress());
+				pstmt.setString(6, member.getMemberId());
+		
+				// sql 실행 
+				if(pstmt.executeUpdate()==1) {
+					System.out.println("회원정보 수정에 성공하였습니다.");
+					flag=true;
+				} else {
+					System.out.println("회원정보 수정에 실패하였습니다.");
+				}
+				
+			
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				System.out.println("updateMember SE: ");
+				e.printStackTrace();
+			} catch (Exception e) {
+				System.out.println("updateMember E:");
+				e.printStackTrace();
+			}finally {
+				// 자원 반납해주는 부분이 필요하다 
+				DbUtil.close(con, pstmt, null);
+				// insert는 집어넣기 만 하는애여서 결과셋 이 필요가 없다 
+				
+			}
+				
+			return flag;
+		}
+	@Override
+	public boolean deleteMember(String memberId) throws Exception {
+		// TODO Auto-generated method stub
+		//결과값 
+			boolean flag=false;
+			// SQL 구문 
+			String sql ="DELETE member_tbl WHERE memberId=?";
+			// DB 연결 객체 생성 
+			Connection con= DbUtil.connect(); // static 영역이여서 객체 생성없이 바로 들어갈 수 있다 
+			// SQL 처리 객체 
+			
+			// Interface statement : 명령문  구문 > callablestatememt Procedure language sql PL sql을 사용할 떄는 stored procedures 
+			//preparedstatement의 상속 whildcard를 쓸수있는 장점 ? 을쓸 수있는 장점 , 인자를 후처리 할 수있다는 장점 
+			// con.preparedstatement 에서 whildcard 사용 
+			// statemenet- preparedstatement- callavlestatement 
+			PreparedStatement pstmt= null;
+			// try catch를 쓸 때 초기화 안했다고 에러가 나기 때문에 초기화하는게 좋다 
+			try {
+				//sql 구문 예비 처리 (준비)
+				pstmt=con.prepareStatement(sql);
+				//sql 인자 처리 
+				pstmt.setString(1, memberId);
+				
+				if(pstmt.executeUpdate()==1) {
+					System.out.println("회원정보 삭제에 성공하였습니다.");
+					flag=true;
+				} else {
+					System.out.println("회원정보 삭제에 실패하였습니다.");
+				}
+				
+			
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				System.out.println("deleteMember SE: ");
+				e.printStackTrace();
+			} catch (Exception e) {
+				System.out.println("deleteMember E:");
+				e.printStackTrace();
+			}finally {
+				// 자원 반납해주는 부분이 필요하다 
+				DbUtil.close(con, pstmt, null);
+				// insert는 집어넣기 만 하는애여서 결과셋 이 필요가 없다 
+				
+			}
+				
+			return flag;
+	}
+	@Override
+	public boolean isMember(String memberId) throws Exception {
+	
+		
+		boolean flag=false;
+		
+		String sql="SELECT count(*) FROM member_tbl "
+//				+"WHERE memberId='"+memberId+"'"
+				+"WHERE ID=?";
+		
+		// DB 연결 객체 생성 
+		Connection con= DbUtil.connect();
+		
+		//SQL 처리 객체
+		
+		PreparedStatement pstmt=null;
+		
+		//SQL 결과셋 객체
+		
+		ResultSet rs= null;
+		
+		try {
+			//sql 구문 예비 처리 (준비)
+			pstmt=con.prepareStatement(sql);
+			//SQL 인자 처리 
+			pstmt.setString(1, memberId);
+			//SQL 실행 을 함과 동시에 결과 셋이 엇어지는것입니다.
+			// insert update deltet는 update로 하고 
+			// 나머지는 execute로 한다 
+			rs=pstmt.executeQuery();
+			
+			// 결과셋 -> vo 
+			if (rs.next()) {
+				flag= rs.getInt(1)==1 ? true :false;
+			}
+			
+			
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			System.out.println("isMemeber SE:");
+			e.printStackTrace();
+		} catch(Exception e) {
+			System.out.println("isMember E: ");
+			e.printStackTrace();
+		}finally {
+			//자원 반납 
+			DbUtil.close(con, pstmt, rs);
+		}
+		
+		
+		return flag;
+		
+	}
 
 }

@@ -23,6 +23,17 @@
 table#view_paging {
 	font-size:9pt;
 }
+
+/*페이징 섹션*/
+
+div#paging_box {
+	width:100%;
+	margin:auto;
+	display:flex;
+	align-items:center;
+	justify-content:center;
+}
+
 </style>
 
 
@@ -77,7 +88,13 @@ table#view_paging {
 
 
 	<!-- 페이징 -->
-
+	<div id="paging_box">
+		<%@ include file="paging.jsp" %>
+	</div>
+	
+	
+	
+	
 	
 
 
