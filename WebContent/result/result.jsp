@@ -10,6 +10,7 @@
 
 <script>
 	alert("${msg}");
+	//location.href="${empty movePath ? "/" :}"
 </script>	
 
 
